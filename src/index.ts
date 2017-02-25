@@ -53,3 +53,9 @@ export function requires<T>(value: T) {
   }
   return value;
 }
+
+export function requiresIf(enabled: boolean) {
+  return function _requiresIf<T>(value: T) {
+    return enabled ? requires(value) : value;
+  };
+}

@@ -1,20 +1,6 @@
 import { expect } from 'chai';
 import { defaultTo } from 'lodash/fp';
-import { env, requires } from '../src';
-
-describe('requires', () => {
-  it('should throw error when parameter is undefined', () => {
-    expect(
-      () => requires(undefined),
-    ).to.throw('Argument undefined');
-  });
-
-  it('should return given parameter', () => {
-    expect(
-      requires('123'),
-    ).to.equal('123');
-  });
-});
+import { env, requires, requiresIf } from '../src';
 
 describe('env', () => {
   beforeEach(() => {
@@ -38,5 +24,33 @@ describe('env', () => {
     expect(
       env(defaultTo('2'), parseFloat)('UNDEFINED_VAR'),
     ).to.equal(2);
+  });
+});
+
+describe('requires', () => {
+  it('should throw error when parameter is undefined', () => {
+    expect(
+      () => requires(undefined),
+    ).to.throw('Argument undefined');
+  });
+
+  it('should return given parameter', () => {
+    expect(
+      requires('123'),
+    ).to.equal('123');
+  });
+});
+
+describe('requiresIf', () => {
+  it('should not throw error on undefined when disabled', () => {
+    expect(
+      requiresIf(false)(undefined),
+    ).to.equal(undefined);
+  });
+
+  it('should throw error on undefined when enabled', () => {
+    expect(
+      () => requiresIf(true)(undefined),
+    ).to.throw('Argument undefined');
   });
 });
