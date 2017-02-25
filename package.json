@@ -1,0 +1,39 @@
+{
+  "name": "env-var-fp",
+  "version": "0.1.0",
+  "description": "Functional utility for parsing env variables",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "scripts": {
+    "clean": "rimraf lib",
+    "lint": "tslint -c tslint.json \"{src,test}/**/*.ts\"",
+    "test": "mocha --compilers ts:ts-node/register",
+    "test:watch": "npm test -- --watch",
+    "build": "tsc",
+    "prepublish": "npm run clean && npm run build"
+  },
+  "author": "Giff Song <giff.song@gmail.com>",
+  "license": "MIT",
+  "repository": "pawsong/env-var-fp",
+  "files": [
+    "src",
+    "lib"
+  ],
+  "dependencies": {
+    "invariant": "^2.2.2",
+    "lodash": "^4.17.4"
+  },
+  "devDependencies": {
+    "@types/chai": "^3.4.35",
+    "@types/invariant": "^2.2.28",
+    "@types/lodash": "^4.14.53",
+    "@types/mocha": "^2.2.39",
+    "@types/node": "^7.0.5",
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0",
+    "rimraf": "^2.6.0",
+    "ts-node": "^2.1.0",
+    "tslint": "^4.4.2",
+    "typescript": "^2.1.6"
+  }
+}
