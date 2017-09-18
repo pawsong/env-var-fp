@@ -1,5 +1,3 @@
-import * as flow from 'lodash/fp/flow';
-
 export interface Env {
   (): (varName: string) => string;
   <T1>(
@@ -37,10 +35,16 @@ export interface Env {
   ): (varName: string) => T6;
 }
 
-export const env: Env = function createEnvVarParser(...fns: Function[]) {
+export const env: Env = function createEnvVarParser(...fns: Array<(a: any) => any>) {
   return function parseEnvVar(varName: string) {
     try {
-      return flow(...fns)(process.env[varName]);
+      let current = process.env[varName];
+
+      for (const fn of fns) {
+        current = fn(current);
+      }
+
+      return current;
     } catch (err) {
       throw new Error(`Parsing env var ${varName} failed: ${err.message}`);
     }

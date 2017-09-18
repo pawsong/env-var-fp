@@ -20,6 +20,12 @@ describe('env', () => {
     ).to.throw('Parsing env var UNDEFINED_VAR failed: Argument undefined');
   });
 
+  it('should process function chain', () => {
+    expect(
+      env(() => 2, (a) => a * 3, (a) => a.toString())('UNDEFINED_VAR'),
+    ).to.equal('6');
+  });
+
   it('should compatible with other functional utilities', () => {
     expect(
       env(defaultTo('2'), parseFloat)('UNDEFINED_VAR'),
