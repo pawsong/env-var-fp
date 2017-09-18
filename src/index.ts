@@ -35,13 +35,20 @@ export interface Env {
   ): (varName: string) => T6;
 }
 
+const returnsSymbol = Symbol();
+
 export const env: Env = function createEnvVarParser(...fns: Array<(a: any) => any>) {
   return function parseEnvVar(varName: string) {
     try {
       let current = process.env[varName];
 
       for (const fn of fns) {
-        current = fn(current);
+        const next = fn(current);
+        if (next === returnsSymbol) {
+          return current;
+        } else {
+          current = next;
+        }
       }
 
       return current;
@@ -51,6 +58,16 @@ export const env: Env = function createEnvVarParser(...fns: Array<(a: any) => an
   };
 };
 
+export type Test<T> = boolean | ((a: T) => any);
+
+function runTest<T>(test: Test<T>, value: T) {
+  if (typeof test === 'boolean') {
+    return test;
+  } else {
+    return test(value);
+  }
+}
+
 export function requires<T>(value: T) {
   if (value === undefined) {
     throw new Error('Argument undefined');
@@ -58,8 +75,19 @@ export function requires<T>(value: T) {
   return value;
 }
 
-export function requiresIf(enabled: boolean) {
-  return function _requiresIf<T>(value: T) {
-    return enabled ? requires(value) : value;
+export function requiresIf<T>(test: Test<T>) {
+  return function _requiresIf(value: T) {
+    return runTest(test, value) ? requires(value) : value;
   };
 }
+
+export function returnsIf<T>(test: Test<T>) {
+  return function _returnsIf(value: T) {
+    const result = runTest(test, value) ? returnsSymbol : value;
+    return result as T;
+  };
+}
+
+export const returnsIfFalsy: <T>(value: T) => T = returnsIf((value) => !value);
+
+export const returnsIfTruthy: <T>(value: T) => T = returnsIf((value) => !!value);
