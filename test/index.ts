@@ -7,6 +7,7 @@ import {
   returnsIf,
   returnsIfFalsy,
   returnsIfTruthy,
+  assert,
 } from '../src';
 
 describe('env', () => {
@@ -123,5 +124,31 @@ describe('returnsIfTruthy', () => {
     expect(
       env(defaultTo(''), returnsIfTruthy, () => 2)('UNDEFINED_VAR'),
     ).to.equal(2);
+  });
+});
+
+describe('assert', () => {
+  it('should return the first parameter on truthy value', () => {
+    expect(
+      env(() => 1, assert(true))('UNDEFINED_VAR'),
+    ).to.equal(1);
+  });
+
+  it('should return the first parameter on succeeded test', () => {
+    expect(
+      env(() => 1, assert(() => true))('UNDEFINED_VAR'),
+    ).to.equal(1);
+  });
+
+  it('should throw error on falsy value', () => {
+    expect(
+      () => env(() => 1, assert(false))('UNDEFINED_VAR'),
+    ).to.throw('Assertion failed');
+  });
+
+  it('should throw error on failed test', () => {
+    expect(
+      () => env(() => 1, assert(() => false))('UNDEFINED_VAR'),
+    ).to.throw('Assertion failed');
   });
 });

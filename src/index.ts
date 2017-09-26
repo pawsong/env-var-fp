@@ -91,3 +91,12 @@ export function returnsIf<T>(test: Test<T>) {
 export const returnsIfFalsy: <T>(value: T) => T = returnsIf((value) => !value);
 
 export const returnsIfTruthy: <T>(value: T) => T = returnsIf((value) => !!value);
+
+export function assert<T>(test: Test<T>) {
+  return function _returnsIf(value: T) {
+    if (!runTest(test, value)) {
+      throw new Error('Assertion failed');
+    }
+    return value;
+  };
+}
