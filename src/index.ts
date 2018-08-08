@@ -58,9 +58,12 @@ export const env: Env = function createEnvVarParser(...fns: Array<(a: any) => an
   };
 };
 
-export type Test<T> = boolean | ((a: T) => any);
+type Test<T> = (value: T) => any;
+type Identity = <T>(value: T) => T;
 
-function runTest<T>(test: Test<T>, value: T) {
+function runTest<T>(test: boolean, value: T): any
+function runTest<T>(test: Test<T>, value: T): any
+function runTest<T>(test: boolean | Test<T>, value: T): any {
   if (typeof test === 'boolean') {
     return test;
   } else {
@@ -75,26 +78,32 @@ export function requires<T>(value: T) {
   return value;
 }
 
-export function requiresIf<T>(test: Test<T>) {
+export function requiresIf(test: boolean): Identity;
+export function requiresIf<T>(test: Test<T>): (value: T) => T
+export function requiresIf<T>(test: boolean | Test<T>) {
   return function _requiresIf(value: T) {
-    return runTest(test, value) ? requires(value) : value;
+    return runTest(test as any /* weird error */, value) ? requires(value) : value;
   };
 }
 
-export function returnsIf<T>(test: Test<T>) {
+export function returnsIf(test: boolean): Identity;
+export function returnsIf<T>(test: Test<T>): (value: T) => T
+export function returnsIf<T>(test: boolean | Test<T>) {
   return function _returnsIf(value: T) {
-    const result = runTest(test, value) ? returnsSymbol : value;
+    const result = runTest(test as any /* weird error */, value) ? returnsSymbol : value;
     return result as T;
   };
 }
 
-export const returnsIfFalsy: <T>(value: T) => T = returnsIf((value) => !value);
+export const returnsIfFalsy: Identity = returnsIf((value) => !value);
 
-export const returnsIfTruthy: <T>(value: T) => T = returnsIf((value) => !!value);
+export const returnsIfTruthy: Identity = returnsIf((value) => !!value);
 
-export function assert<T>(test: Test<T>) {
-  return function _returnsIf(value: T) {
-    if (!runTest(test, value)) {
+export function assert(test: boolean): Identity;
+export function assert<T>(test: Test<T>): (value: T) => T;
+export function assert<T>(test: boolean | Test<T>) {
+  return function _assert(value: T) {
+    if (!runTest(test as any /* weird error */, value)) {
       throw new Error('Assertion failed');
     }
     return value;

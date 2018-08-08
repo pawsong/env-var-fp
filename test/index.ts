@@ -1,13 +1,13 @@
 import { expect } from 'chai';
 import { defaultTo } from 'lodash/fp';
 import {
+  assert,
   env,
   requires,
   requiresIf,
   returnsIf,
   returnsIfFalsy,
   returnsIfTruthy,
-  assert,
 } from '../src';
 
 describe('env', () => {
